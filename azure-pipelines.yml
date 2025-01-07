@@ -17,7 +17,7 @@ steps:
   inputs:
     version: '$(dotnetSdkVersion)'
 
-- task: NuGetToolInstaller@0
+- task: NuGetToolInstaller@1  # 使用較新版本的 NuGet 工具安裝器
   inputs:
     versionSpec: '$(dotnetSdkVersion)'
 
@@ -45,10 +45,18 @@ steps:
     vstsFeed: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: '$(System.TeamProject)/Tailspin.SpaceGame.Web.Models'
+
+- task: DotNetCoreCLI@2
   displayName: 'Build the project - $(buildConfiguration)'
   inputs:
     command: 'build'
-    arguments: '--no-restore --configuration $(buildConfiguration)'
+    arguments: '--no-restore --configuration $(buildConfiguration)'  # '--no-restore' 確保不會重複還原
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
